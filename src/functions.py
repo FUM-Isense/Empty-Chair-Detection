@@ -1,8 +1,12 @@
 # check the IOU between bags and person on each chair
+from collections import Counter
 import numpy as np
 import cv2 
 
 
+''' 
+  get IOU and matched 
+'''
 def calculate_iou(box1, box2):
     # Extract coordinates
     x1_tl, y1_tl, x1_br, y1_br = box1
@@ -29,7 +33,9 @@ def calculate_iou(box1, box2):
 
     return iou, intersection_area / area_box1
 
-
+'''
+  Draw box on the image with input boxes and label
+'''
 def draw_boxes_with_labels(img, detections):
     # Define scale factors for box thickness and font size
     thickness = max(1, int(round(min(img.shape[:2]) / 400)))  # Scale thickness based on image size
@@ -52,9 +58,6 @@ def draw_boxes_with_labels(img, detections):
         # Draw the bounding box
         cv2.rectangle(img, (x_min, y_min), (x_max, y_max), color, thickness=thickness)
 
-
-
-
         # Calculate text width & height to draw the transparent boxes as background
         (text_width, text_height), _ = cv2.getTextSize(label_text, cv2.FONT_HERSHEY_SIMPLEX, font_scale, thickness)
         text_offset_x = x_min
@@ -65,3 +68,37 @@ def draw_boxes_with_labels(img, detections):
         cv2.putText(img, label_text, (text_offset_x, text_offset_y - 2), cv2.FONT_HERSHEY_SIMPLEX, font_scale, (255, 255, 255), thickness=thickness)
 
     return img
+
+'''
+  Calculate find most repeated values
+'''
+def get_max(counter):
+  max_name = ''
+  max_value = -1
+  for name in list(counter.keys()):
+    if counter[name] > max_value:
+      max_name = name
+      max_value = counter[name]
+
+  print(counter)
+  return max_name
+
+
+'''
+  Count number of each label in each column
+'''
+def row_counts(detected):
+  # save information for each prv. frames
+  row = {0:[],1:[],2:[]}
+  for det in detected:
+    if det is not None:
+      for i in range(3):
+        row[i].append(det[i])
+  
+  # save empty chair and non-empty
+  result = [0,0,0]
+  for i in range(3):
+    max_name = get_max(dict(Counter(row[i])))
+    result[i] = 1 if max_name != 'chair' else 0
+
+  return result
