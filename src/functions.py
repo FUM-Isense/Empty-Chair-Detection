@@ -69,6 +69,13 @@ def draw_boxes_with_labels(img, detections):
 
     return img
 
+def com_draw(img, all_chairs, all_bags, all_people):
+  result = draw_boxes_with_labels(img, all_chairs)
+  result = draw_boxes_with_labels(result, all_bags)
+  result = draw_boxes_with_labels(result, all_people)
+  return result
+
+
 '''
   Calculate find most repeated values
 '''
@@ -102,3 +109,5 @@ def row_counts(detected):
     result[i] = 1 if max_name != 'chair' else 0
 
   return result
+
+
