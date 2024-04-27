@@ -14,7 +14,7 @@ model = Detection('./models/yolov8m.pt')
 # Open the video file for reading
 cap = cv2.VideoCapture(input_video)
 
-count = 0
+count = -1
 results = {}
 while cap.isOpened():
     # counter for counting frames
@@ -26,7 +26,7 @@ while cap.isOpened():
     if not ret:
       break
 
-    preds = model.inference('./inputs/front.jpg')
+    preds = model.inference(frame)
     results[count] = preds
 
 
